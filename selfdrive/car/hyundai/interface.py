@@ -296,33 +296,30 @@ class CarInterface(CarInterfaceBase):
       tire_stiffness_factor = 0.8
     elif candidate in [CAR.K7, CAR.K7_HEV]:
       tire_stiffness_factor = 0.7
-      ret.mass = 1650. + STD_CARGO_KG
+      ret.mass = 1685. + STD_CARGO_KG
       ret.wheelbase = 2.855
       ret.centerToFront = ret.wheelbase * 0.4
-      ret.steerRatio = 17.25
+      ret.steerRatio = 16.80
     elif candidate == CAR.K9:
       ret.mass = 2005. + STD_CARGO_KG
       ret.wheelbase = 3.15
       ret.centerToFront = ret.wheelbase * 0.4
       tire_stiffness_factor = 0.8
-
       ret.steerRatio = 14.5
-      ret.steerRateCost = 0.4
-
-      if ret.lateralTuning.which() == 'torque':
-        ret.lateralTuning.torque.useSteeringAngle = True
-        max_lat_accel = 2.5
-        ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
-        ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
-        ret.lateralTuning.torque.ki = 0.1 / max_lat_accel
-        ret.lateralTuning.torque.friction = 0.01
-        ret.lateralTuning.torque.kd = 0.0
 
 
     ret.radarTimeStep = 0.05
 
     if ret.centerToFront == 0:
       ret.centerToFront = ret.wheelbase * 0.4
+
+    if ret.lateralTuning.which() == 'torque':
+      #selfdrive/car/torque_data/params.yaml 참조해서 값 입력 https://codebeautify.org/jsonviewer/y220b1623
+      torque_lat_accel_factor = 3.12625562280304 #LAT_ACCEL_FACTOR		
+      torque_friction = 0.11703652166984638 #FRICTION
+      ret.maxLateralAccel = 2.0928228595938845 #MAX_LAT_ACCEL_MEASURED		
+      #토크
+      set_torque_tune(ret.lateralTuning, torque_lat_accel_factor, torque_friction)
 
 
     # TODO: get actual value, for now starting with reasonable value for
